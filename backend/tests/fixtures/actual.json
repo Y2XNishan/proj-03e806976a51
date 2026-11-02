@@ -1,0 +1,4 @@
+[
+  {"dataset":"FUELHH","publishTime":"2026-01-02T01:00:00Z","startTime":"2026-01-02T00:00:00Z","settlementDate":"2026-01-02","settlementPeriod":1,"fuelType":"WIND","generation":120},
+  {"dataset":"FUELHH","publishTime":"2026-02-01T01:00:00Z","startTime":"2026-02-01T00:00:00Z","settlementDate":"2026-02-01","settlementPeriod":1,"fuelType":"WIND","generation":100}
+]

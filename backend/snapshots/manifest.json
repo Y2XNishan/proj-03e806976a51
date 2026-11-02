@@ -1,0 +1,21 @@
+{
+  "actual_rows": 1488,
+  "compressed_bytes": 118484,
+  "decision_dates": [
+    "2026-01-01",
+    "2026-01-31"
+  ],
+  "delivery_dates": [
+    "2026-01-02",
+    "2026-02-01"
+  ],
+  "file": "elexon-2026-01-38e8b2368bb0.json.gz",
+  "forecast_rows": 18688,
+  "refreshed_at": "2026-11-01T10:07:49.466415+00:00",
+  "schema_version": 1,
+  "sha256": "38e8b2368bb06edad1f8b5faafa757ca394dbe28f39d4412ac7beeb0c42e075b",
+  "sources": {
+    "actual": "https://data.elexon.co.uk/bmrs/api/v1/datasets/FUELHH/stream",
+    "forecast": "https://data.elexon.co.uk/bmrs/api/v1/datasets/WINDFOR/stream"
+  }
+}

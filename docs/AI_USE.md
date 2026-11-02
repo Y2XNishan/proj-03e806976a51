@@ -1,0 +1,4 @@
+# AI-use disclosure
+
+An AI coding assistant created the plan, scaffold, Elexon client, cache, point-in-time selection logic, React dashboard, tests, snapshot export/validation, Docker and Vercel configuration, and documentation. The assistant inspected Elexon's official OpenAPI schema and live stream responses, ran a real historical refresh, and exported its records into a checksum-verified read-only deployment asset. Test fixtures contain synthetic, explicitly labeled records; production endpoints and dashboard read only source-backed Elexon data. The reported historical metrics were calculated from those records, not generated as sample numbers. Backend and frontend tests and a local build were run; Docker and live Vercel deployment were not verified in this environment. Human review of the assumed decision cutoff, Elexon source coverage, metric interpretation, snapshot changes, and any public deployment remains required before purchasing use.
+

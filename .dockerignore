@@ -1,0 +1,13 @@
+.git
+.npm-cache
+**/node_modules
+**/dist
+**/__pycache__
+**/.pytest_cache
+.venv
+backend/data
+.preview
+backend/tests
+.env
+**/.env
+**/.env.*

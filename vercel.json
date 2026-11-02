@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "fastapi",
+  "functions": {
+    "app.py": {
+      "includeFiles": "backend/snapshots/**",
+      "excludeFiles": "{frontend/**,backend/tests/**,backend/data/**,docs/**,.preview/**,.npm-cache/**,.venv/**,.vercel/**,.git/**}"
+    }
+  }
+}
