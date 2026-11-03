@@ -1,0 +1,17 @@
+.pytest_cache/
+**/.pytest_cache/
+.venv/
+**/node_modules/
+**/dist/
+.npm-cache/
+.preview/
+coverage/
+htmlcov/
+.coverage
+**/__pycache__/
+*.py[cod]
+backend/data/
+.env
+.env.*
+
+# Keep backend/snapshots/ in the deployment: it contains verified Elexon data.
