@@ -2,6 +2,8 @@
 
 A UK wind forecast dashboard built for the REint Full Stack SWE internship challenge. It evaluates hypothetical day-ahead purchasing decisions made 1–31 January 2026. The assumed noon Europe/London decision cutoff is configurable and is not a confirmed market rule. A 31 January decision covers 1 February delivery.
 
+**Live deployment:** [WindScope dashboard](https://windscope-web.vercel.app) · [FastAPI backend](https://windscope-api.vercel.app) · [API summary](https://windscope-api.vercel.app/api/summary). The live frontend and summary endpoint returned HTTP 200 on 4 November 2026; the summary reported 744 matched of 1,488 expected intervals and the assumed `12:00` cutoff.
+
 ## Stack and layout
 
 - `frontend/`: responsive React + Vite dashboard with Recharts and Lucide icons
@@ -72,50 +74,22 @@ FastAPI serves response schemas and field descriptions at `/docs` and `/openapi.
 
 With Docker installed, run `docker compose build`, then `docker compose up`, and open `http://localhost:8080`. The backend image includes the read-only source-backed asset and runs as a non-root user. Nginx serves the Vite build and forwards `/api` to FastAPI, so browser CORS is unnecessary. No volume or live refresh is required. **Docker has not been executed in the current environment**; image and Compose behavior still need validation on a Docker host.
 
-## Deployment entry points
+## Production deployment
 
-- **Recommended Vercel API project:** set repository root `/`, FastAPI framework, Python 3.13, root `app.py` and `requirements.txt`. Root `vercel.json` includes `backend/snapshots/**` in the function. Set `SNAPSHOT_REQUIRED=1` and `CORS_ORIGINS=https://<web-project>.vercel.app` (exact origin, without a path or trailing slash).
-- **Vercel web project:** use the same repository with root `frontend/`, Vite framework and `dist` output. Set `VITE_API_BASE_URL=https://<api-project>.vercel.app/api` at build time. `VITE_` variables are public; do not place credentials there. If the web origin changes, update backend CORS and redeploy. Preview domains need explicit allowed origins.
-- **Heroku alternative:** `Procfile` remains for compatibility, but Vercel is preferred for a personal, noncommercial challenge demo. The bundled read-only asset also avoids Heroku's ephemeral SQLite storage.
+The running application uses two Vercel projects from the same public repository. The **API project** uses the repository root, Python 3.13, `app.py`, `requirements.txt`, and the root `vercel.json`. It serves FastAPI as one function with the versioned Elexon snapshot explicitly bundled from `backend/snapshots/**`. The **web project** uses `frontend/` as its root and serves the Vite `dist` build as static assets. The browser calls the API at the public backend origin. This fixed historical analysis needs no production database and performs no live Elexon refresh during a request or cold start.
 
-These are deployment configurations, not deployed services. Vercel Functions have a read-only filesystem, and the bundled snapshot removes the need for persistent database storage for this fixed historical period. Use a personal noncommercial Hobby project only within its limits. Live Vercel deployment and Docker builds have not been verified. Official references: [FastAPI on Vercel](https://vercel.com/docs/frameworks/backend/fastapi), [Python runtime](https://vercel.com/docs/functions/runtimes/python), [Vite on Vercel](https://vercel.com/docs/frameworks/frontend/vite), and [monorepo projects](https://vercel.com/docs/monorepos).
+| Vercel project | Environment variable | Production value | Status and purpose |
+| --- | --- | --- | --- |
+| API | `CORS_ORIGINS` | `https://windscope-web.vercel.app` | Required for browser access from the web origin; omit trailing slash and `/api` |
+| Web | `VITE_API_BASE_URL` | `https://windscope-api.vercel.app/api` | Required public API base, embedded at Vite build time |
+| API | `SNAPSHOT_REQUIRED` | `1` | Recommended explicit guard for the bundled source asset; Vercel already fails closed if it is missing |
+| API | `DAY_AHEAD_CUTOFF_LOCAL` | `12:00` | Optional explicit setting; the code defaults to `12:00` Europe/London |
 
-After public repository review and publication, the following is the intended **future** PowerShell deployment sequence from the repository root. Choose unused project names, verify Hobby/noncommercial scope, and inspect each deployment before sharing it. Both project names below derive from the same random identifier; the API is deployed first so its URL can be checked before the web build.
+To reproduce the deployment, create or link the two Vercel projects with the roots above, set the required variables and any chosen explicit settings in each project's **Production** environment, and build/deploy the API followed by the web project. Check [`/api/summary`](https://windscope-api.vercel.app/api/summary), then the [dashboard](https://windscope-web.vercel.app), browser network requests, and a filtered accuracy view. Redeploy the affected project after changing an environment variable. Preview web domains require their own explicitly allowed API CORS origin. `VITE_` values are visible in browser code; no token or credential belongs in them. Do not set `ELEXON_CACHE_PATH` in production; the source-backed bundle is loaded directly.
 
-```powershell
-npm.cmd install --global vercel
-vercel login
-$id = [guid]::NewGuid().ToString('N').Substring(0, 12)
-$apiProject = "proj-$id-api"
-$webProject = "proj-$id-web"
-vercel project create $apiProject
-vercel project create $webProject
-vercel project update $apiProject --framework fastapi
-vercel project update $webProject --framework vite
-vercel link --yes --project $apiProject
-vercel env add SNAPSHOT_REQUIRED production --value '1' --type config --yes
-vercel env add CORS_ORIGINS production --value "https://${webProject}.vercel.app" --type config --yes
-vercel deploy --prod
-Invoke-RestMethod "https://${apiProject}.vercel.app/api/summary"
-cd frontend
-vercel link --yes --project $webProject
-vercel env add VITE_API_BASE_URL production --value "https://${apiProject}.vercel.app/api" --type config --yes
-vercel deploy --prod
-cd ..
-```
+The deployment follows Vercel's [FastAPI](https://vercel.com/docs/frameworks/backend/fastapi), [Python runtime](https://vercel.com/docs/functions/runtimes/python), [Vite](https://vercel.com/docs/frameworks/frontend/vite), and [monorepo](https://vercel.com/docs/monorepos) guidance. A legacy `Procfile` remains for Heroku compatibility, but the verified production deployment uses Vercel.
 
-These commands use the current [Vercel CLI project](https://vercel.com/docs/cli/project), [environment variable](https://vercel.com/docs/cli/env), and [deployment](https://vercel.com/docs/cli/deploy) interfaces. If Vercel assigns a different production domain, use the actual domain in the web API base and backend CORS settings and redeploy both projects. The root and `frontend/` directories must each link to the intended project; `.vercel/` metadata stays ignored. Verify `/api/summary`, the web page, charts, filters, and browser network requests after deployment.
+## Challenge handoff
 
-## Public repository handoff (do not run yet)
-
-The assignment asks for a random-looking public repository name without identifying information. After reviewing files, `git status`, and Git author settings, PowerShell can generate one and publish when authorized:
-
-```powershell
-$repoName = 'proj-' + [guid]::NewGuid().ToString('N').Substring(0, 12)
-git add .
-git commit -m "Build WindScope challenge dashboard"
-gh repo create $repoName --public --source . --remote origin --push
-```
-
-These are **future instructions**; nothing has been pushed or deployed. A random repository name does not anonymize the GitHub account or commit author. Review GitHub privacy settings before publishing. Local caches, environment files, virtual environments and generated builds are excluded from Git. See [PLAN.md](PLAN.md) for status and [docs/AI_USE.md](docs/AI_USE.md) for disclosure.
+The public GitHub repository has the requested random-looking repository name. This README provides the live URLs, local run and test commands, data provenance, refresh procedure, API routes, metric definitions, cutoff assumption, resolution limitation, and Docker instructions. [PLAN.md](PLAN.md) tracks acceptance; [architecture notes](docs/ARCHITECTURE.md) document selection and matching rules; [AI-use disclosure](docs/AI_USE.md) describes assistance and review limits. Docker execution remains unverified because Docker is unavailable in the current environment. Provide the public repository and live dashboard/API links through the challenge's submission process.
 
