@@ -1,13 +1,13 @@
 # WindScope implementation plan — REint challenge
 
-Target: a focused, auditable UK wind forecast dashboard for day-ahead purchasing decisions made in January 2026. Time budget: at most 16 hours. The public repository and Vercel frontend/API are live; Docker execution and external challenge submission remain.
+Target: a focused, auditable UK wind forecast dashboard for day-ahead purchasing decisions made in January 2026. Time budget: at most 16 hours. The public repository and Vercel frontend/API are live, and Docker Compose has been verified on Windows. External challenge submission remains.
 
 ## Increments
 
 1. **Scaffold (about 2 hours)** — React/Vite shell, FastAPI health endpoint, local configuration, Docker and deployment entry points, docs, smoke checks.
 2. **Elexon data and decision rules (about 5 hours)** — Fetch FUELHH actual generation and WINDFOR forecasts, preserve source timestamps and provenance, define a documented day-ahead decision time, and select only a forecast published at or before each decision. Limit decisions to 1–31 January 2026. Do not substitute a later forecast when an earlier one is missing.
 3. **Analysis API and UI (about 5 hours)** — Join selected forecast and actual generation by the same 30-minute settlement interval (with explicit UK timezone and DST handling), expose coverage and MAE/RMSE/bias, and show a useful decision timeline and error view. Missing observations remain missing; no fabricated points.
-4. **Verification and handoff (about 4 hours)** — Add fixture-based tests for cutoff selection, boundary times, missing data, interval matching, and metrics. Inspect Docker, verify local and live workflows, finish architecture and AI-use documentation, and document deployment configuration.
+4. **Verification and handoff (about 4 hours)** — Add fixture-based tests for cutoff selection, boundary times, missing data, interval matching, and metrics. Verify Docker, local and live workflows, finish architecture and AI-use documentation, and document deployment configuration.
 
 ## Acceptance checklist
 
@@ -23,7 +23,7 @@ Target: a focused, auditable UK wind forecast dashboard for day-ahead purchasing
 - [x] A compact, checksum-verified Elexon source bundle is versioned with the application; production startup does not rely on an ephemeral SQLite file or live refresh.
 - [x] README, architecture notes, AI-use disclosure, Docker configuration, and Vercel instructions are updated.
 - [x] The random-looking public repository and Vercel frontend/API are available; the live API reports the January snapshot and 12:00 cutoff.
-- [ ] Execute Docker build and Compose smoke test on a machine with Docker.
+- [x] Docker Desktop 29.9.2 and Compose 5.6.1 built both images; the backend was healthy, the dashboard and date filter worked, and the proxied summary returned source-backed metrics (user verification, 7 November 2026).
 - [ ] Submit the public repository and live deployment links through the REint challenge process.
 
 ## Key design decisions

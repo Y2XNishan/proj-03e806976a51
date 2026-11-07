@@ -72,7 +72,20 @@ FastAPI serves response schemas and field descriptions at `/docs` and `/openapi.
 
 ## Docker
 
-With Docker installed, run `docker compose build`, then `docker compose up`, and open `http://localhost:8080`. The backend image includes the read-only source-backed asset and runs as a non-root user. Nginx serves the Vite build and forwards `/api` to FastAPI, so browser CORS is unnecessary. No volume or live refresh is required. **Docker has not been executed in the current environment**; image and Compose behavior still need validation on a Docker host.
+From the repository root, with Docker Desktop running:
+
+```powershell
+docker compose build
+docker compose up -d
+docker compose ps
+Invoke-RestMethod http://localhost:8080/api/summary
+# When finished:
+docker compose down
+```
+
+Open the Docker-hosted dashboard at **http://localhost:8080**. The backend image includes the read-only Elexon snapshot and runs as a non-root user. Nginx serves the Vite build and proxies `/api` to FastAPI on the same origin. No data volume or live Elexon refresh is required at startup.
+
+On 7 November 2026, the project was verified on Windows with Docker Desktop 29.9.2 and Docker Compose 5.6.1: both images built; `docker compose up -d` started a healthy backend and running frontend; `docker compose ps` showed the frontend published on `localhost:8080`. `/api/summary` through Nginx returned 744 matched of 1,488 intervals, MAE 1,883.98 MW, RMSE 2,350.33 MW, and bias +1,685.27 MW. The dashboard loaded and its decision-date filter was manually checked. This verification was reported by the user; Docker was not rerun during this documentation update.
 
 ## Production deployment
 
@@ -91,5 +104,5 @@ The deployment follows Vercel's [FastAPI](https://vercel.com/docs/frameworks/bac
 
 ## Challenge handoff
 
-The public GitHub repository has the requested random-looking repository name. This README provides the live URLs, local run and test commands, data provenance, refresh procedure, API routes, metric definitions, cutoff assumption, resolution limitation, and Docker instructions. [PLAN.md](PLAN.md) tracks acceptance; [architecture notes](docs/ARCHITECTURE.md) document selection and matching rules; [AI-use disclosure](docs/AI_USE.md) describes assistance and review limits. Docker execution remains unverified because Docker is unavailable in the current environment. Provide the public repository and live dashboard/API links through the challenge's submission process.
+The public GitHub repository has the requested random-looking repository name. This README provides the live URLs, local run and test commands, data provenance, refresh procedure, API routes, metric definitions, cutoff assumption, resolution limitation, and verified Docker instructions. [PLAN.md](PLAN.md) tracks acceptance; [architecture notes](docs/ARCHITECTURE.md) document selection and matching rules; [AI-use disclosure](docs/AI_USE.md) describes assistance and review limits. Provide the public repository and live dashboard/API links through the challenge's submission process.
 
